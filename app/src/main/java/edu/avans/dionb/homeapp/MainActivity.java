@@ -13,9 +13,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import edu.avans.dionb.homeapp.Entity.Device;
+import edu.avans.dionb.homeapp.Entity.DeviceType;
+import edu.avans.dionb.homeapp.Entity.SharedPrefHandler;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    ArrayAdapter<Device> adapter;
+    ArrayList<Device> allDevicesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +54,45 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        allDevicesList = SharedPrefHandler.GetDevices(getApplicationContext());
+        final ListView allDevices = findViewById(R.id.main_devices);
+        adapter = new ArrayAdapter<Device>(getApplicationContext(), android.R.layout.simple_list_item_1, allDevicesList);
+        allDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), "Long click to delete", Toast.LENGTH_SHORT).show();
+                Device clickedDevice = allDevicesList.get(position);
+                if(clickedDevice.getType() == DeviceType.LED_STRIP_DION) {
+                    Intent i = new Intent(getApplicationContext(), LedstripDionActivity.class);
+                    i.putExtra("ip", clickedDevice.getIp());
+                    i.putExtra("name", clickedDevice.getName());
+                    i.putExtra("type", clickedDevice.getType().toString());
+                    startActivity(i);
+                }
+            }
+        });
+        allDevices.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                SharedPrefHandler.DeleteDevice(allDevicesList.get(position), getApplicationContext());
+                allDevicesList = SharedPrefHandler.GetDevices(getApplicationContext());
+                adapter.clear();
+                adapter.addAll(allDevicesList);
+                adapter.notifyDataSetChanged();
+                return true;
+            }
+        });
+        allDevices.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        allDevicesList = SharedPrefHandler.GetDevices(getApplicationContext());
+        adapter.clear();
+        adapter.addAll(allDevicesList);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -67,11 +119,6 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -81,17 +128,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_manage) {
 
         }
 

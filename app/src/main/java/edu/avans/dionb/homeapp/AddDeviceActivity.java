@@ -1,6 +1,7 @@
 package edu.avans.dionb.homeapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -49,6 +50,11 @@ public class AddDeviceActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getApplicationContext(), "Add the device", Toast.LENGTH_SHORT).show();
+                Device dvToAdd = devices.get(position);
+                Intent i = new Intent(getApplicationContext(), ConfirmAddDeviceActivity.class);
+                i.putExtra("ip", dvToAdd.getIp());
+                i.putExtra("name", dvToAdd.getName());
+                startActivity(i);
             }
         });
 
