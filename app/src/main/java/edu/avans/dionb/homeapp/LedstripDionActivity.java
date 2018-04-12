@@ -34,6 +34,7 @@ public class LedstripDionActivity extends AppCompatActivity {
     Device selectedDevice;
     TextView reachableBox;
     Timer pinging;
+    boolean modeFirstSelected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,6 @@ public class LedstripDionActivity extends AppCompatActivity {
         onOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                System.out.println("Aan uit gedrukt");
                 if(isChecked) {
                     connection.TurnOn();
                 } else {
@@ -143,7 +143,11 @@ public class LedstripDionActivity extends AppCompatActivity {
         modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                connection.SetMode(position);
+                if(modeFirstSelected) {
+                    connection.SetMode(position);
+                } else {
+                    modeFirstSelected = true;
+                }
             }
 
             @Override

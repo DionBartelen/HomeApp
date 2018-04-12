@@ -69,6 +69,12 @@ public class MainActivity extends AppCompatActivity
                     i.putExtra("name", clickedDevice.getName());
                     i.putExtra("type", clickedDevice.getType().toString());
                     startActivity(i);
+                } else if(clickedDevice.getType() == DeviceType.LED_STRIP_RAMON) {
+                    Intent i = new Intent(getApplicationContext(), LedstripRamonActivity.class);
+                    i.putExtra("ip", clickedDevice.getIp());
+                    i.putExtra("name", clickedDevice.getName());
+                    i.putExtra("type", clickedDevice.getType().toString());
+                    startActivity(i);
                 }
             }
         });
