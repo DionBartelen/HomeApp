@@ -83,7 +83,7 @@ public class LedstripRamonActivity extends AppCompatActivity implements SeekBar.
         briBar.setOnSeekBarChangeListener(this);
 
         Spinner modeSpinner = findViewById(R.id.ledstripramon_control_modeselect);
-        modeSpinner.setAdapter(new ArrayAdapter<String>(this, R.layout.spinner_item, new ArrayList<String>(Arrays.asList("RGB Trail", "Random knipperen", "Verspringen", "Twee trail", "Breathe", "1 kleur", "Klok"))));
+        modeSpinner.setAdapter(new ArrayAdapter<String>(this, R.layout.spinner_item, new ArrayList<String>(Arrays.asList("RGB Trail", "Random knipperen", "Verspringen", "Twee trail", "Breathe", "1 kleur", "Klok", "Confetti", "BPM", "Jongleren"))));
         modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
