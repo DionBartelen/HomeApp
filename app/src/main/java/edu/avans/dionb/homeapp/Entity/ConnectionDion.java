@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by dionb on 10-4-2018.
@@ -29,6 +30,7 @@ public class ConnectionDion {
     RequestQueue queue;
     String ip;
     int port = 8000;
+    CheckWeahterListener listener = null;
 
     public ConnectionDion(Context context, String ip) {
         this.context = context;
@@ -115,6 +117,26 @@ public class ConnectionDion {
             }
         };
         getRequestQue().add(request);
+    }
+
+    public void checkWeather(CheckWeahterListener lst) {
+        listener = lst;
+        String url = "http://" + ip + ":" + port + "/currentDHT";
+        System.out.println(url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, OnWeatherSucces(), ErrorListener());
+        getRequestQue().add(request);
+    }
+
+    public Response.Listener<String> OnWeatherSucces() {
+        return new Response.Listener<String>() {
+            @Override
+            public void onResponse(String measurement) {
+                if(listener != null) {
+                    listener.OnWeatherReceived(WeatherMeasurement.fromJson(measurement));
+                }
+                listener = null;
+            }
+        };
     }
 
     public Response.Listener<String> OnSucces() {

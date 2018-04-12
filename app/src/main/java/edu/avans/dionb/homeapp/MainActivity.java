@@ -15,17 +15,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import edu.avans.dionb.homeapp.Entity.CheckWeahterListener;
+import edu.avans.dionb.homeapp.Entity.ConnectionDion;
 import edu.avans.dionb.homeapp.Entity.Device;
 import edu.avans.dionb.homeapp.Entity.DeviceType;
 import edu.avans.dionb.homeapp.Entity.SharedPrefHandler;
+import edu.avans.dionb.homeapp.Entity.WeatherMeasurement;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, CheckWeahterListener {
 
     ArrayAdapter<Device> adapter;
     ArrayList<Device> allDevicesList;
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         allDevicesList = SharedPrefHandler.GetDevices(getApplicationContext());
+        checkWeather();
         final ListView allDevices = findViewById(R.id.main_devices);
         adapter = new ArrayAdapter<Device>(getApplicationContext(), android.R.layout.simple_list_item_1, allDevicesList);
         allDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -90,6 +96,23 @@ public class MainActivity extends AppCompatActivity
             }
         });
         allDevices.setAdapter(adapter);
+        ImageButton refrehsTempBtn = findViewById(R.id.main_refreshtemp);
+        refrehsTempBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkWeather();
+            }
+        });
+    }
+
+    private void checkWeather() {
+        for(Device d : allDevicesList) {
+            if(d.getType() == DeviceType.LED_STRIP_DION) {
+                ConnectionDion conn = new ConnectionDion(getApplicationContext(), d.getIp());
+                conn.checkWeather(this);
+                break;
+            }
+        }
     }
 
     @Override
@@ -99,6 +122,7 @@ public class MainActivity extends AppCompatActivity
         adapter.clear();
         adapter.addAll(allDevicesList);
         adapter.notifyDataSetChanged();
+        checkWeather();
     }
 
     @Override
@@ -142,5 +166,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void OnWeatherReceived(WeatherMeasurement measurement) {
+        TextView tempBox = findViewById(R.id.main_tempbox);
+        tempBox.setText(measurement.getTemperature() + " C");
     }
 }
